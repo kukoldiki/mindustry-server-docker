@@ -24,7 +24,11 @@ jobs:
       - name: Get latest release
         id: release
         run: |
-          TAG=$(curl -s https://api.github.com/repos/Anuken/Mindustry/releases/latest | jq -r .tag_name)
+          TAG=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/Anuken/Mindustry/releases/latest | jq -r .tag_name)
+          if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
+            echo "Failed to fetch latest release tag"
+            exit 1
+          fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Update Dockerfile
